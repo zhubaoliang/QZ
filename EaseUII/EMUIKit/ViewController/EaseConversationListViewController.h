@@ -77,6 +77,7 @@ typedef NS_ENUM(int, DXDeleteConvesationType) {
 
 @property (weak, nonatomic) id<EaseConversationListViewControllerDelegate> delegate;
 @property (weak, nonatomic) id<EaseConversationListViewControllerDataSource> dataSource;
+//非官方
 
 /*!
  @method

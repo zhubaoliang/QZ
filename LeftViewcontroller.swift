@@ -7,10 +7,10 @@
 //
 
 import UIKit
-class LeftViewcontroller: UIViewController {
+class LeftViewcontroller: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(colorLiteralRed: 0.2, green: 0.8, blue: 1, alpha: 1)
+        self.navigationBar.hidden = true
     }
     
 }

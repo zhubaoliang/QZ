@@ -10,15 +10,26 @@ import UIKit
 class ChatController:EaseMessageViewController, EaseMessageViewControllerDelegate, EaseMessageViewControllerDataSource  {
     var avatarImage = UIImage()
     var nikNmae = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+       
     }
+    
+    
     override func viewWillAppear(animated: Bool) {
+        self.hidesBottomBarWhenPushed = true
         self.dataSource = self
         
     }
     override func viewWillDisappear(animated: Bool) {
+        
         self.conversation.markAllMessagesAsRead()
+    }
+    
+    
+    override func viewDidDisappear(animated: Bool) {
+        //self.hidesBottomBarWhenPushed = false
     }
     
     // EaseMessageViewControllerDataSource 方法
@@ -38,7 +49,6 @@ class ChatController:EaseMessageViewController, EaseMessageViewControllerDelegat
         model.nickname = nikNmae
         return model
     }
-    
     
     
     

@@ -9,7 +9,7 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate,EMClientDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate,EMClientDelegate{
 
     var window: UIWindow?
 
@@ -27,20 +27,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate,EMClientDelegate {
         
         dispatch_async(dispatch_get_global_queue(0, 0), {
         
-        
+        //实现自动登陆设置
+            let userData = NSUserDefaults.standardUserDefaults()
+            if userData.objectForKey("userinfo") != nil
+            {
+            let userMessage = userData.objectForKey("userinfo") as! [String]
             EMClient.sharedClient().addDelegate(self, delegateQueue: nil)
             let options = EMOptions.init(appkey: "xiaocool#qiezi")
+            options.apnsCertName = "push_dev"
             EMClient.sharedClient().initializeSDKWithOptions(options)
             if EMClient.sharedClient().options.isAutoLogin == true
             {
-                let error = EMClient.sharedClient().loginWithUsername("zhu", password: "123")
+            let error = EMClient.sharedClient().loginWithUsername( "qiezi" + userMessage[2], password: userMessage[2])
                 if(error  == nil)
                 {
                     print("对话自动登录成功")
                 }
                 
             }else{
-                let error = EMClient.sharedClient().loginWithUsername("zhu", password: "123")
+                let error = EMClient.sharedClient().loginWithUsername("qiezi" + userMessage[2], password: userMessage[2])
                 if(error == nil)
                 {
                     print("对话登录成功")
@@ -48,9 +53,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate,EMClientDelegate {
                 EMClient.sharedClient().options.isAutoLogin = true
                 
             }
-
+            //实现apns离线推送
+            EMClient.sharedClient().setApnsNickname("qiezi" + userMessage[2])
+            if(application.respondsToSelector(#selector(UIApplication.registerForRemoteNotifications))){
+                application.registerForRemoteNotifications()
+                let notificationTypes:UIUserNotificationType = UIUserNotificationType(arrayLiteral: .Badge,.Sound,.Alert)
+                let settings:UIUserNotificationSettings = UIUserNotificationSettings.init(forTypes: notificationTypes, categories: nil)
+                application.registerUserNotificationSettings(settings)
+            }else{
+                let notificationTypes:UIRemoteNotificationType = UIRemoteNotificationType(arrayLiteral: .Badge,.Sound,.Alert)
+                //application.registerForRemoteNotificationTypes(notificationTypes)
+                UIApplication.sharedApplication().registerForRemoteNotificationTypes(notificationTypes)
+                
+            }
+            }
+            
         
         })
+        
         
         
         return true
@@ -117,6 +137,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate,EMClientDelegate {
         print("当前账号已经从服务器中删除")
     }
 
-
+//将得到的deviceToken传给sdk
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        print("发送devicetoken")
+        EMClient.sharedClient().bindDeviceToken(deviceToken)
+    }
+  //注册失败
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+        print("注册devicetoken失败")
+        print(error)
+    }
+    
+   
+    
 }
 

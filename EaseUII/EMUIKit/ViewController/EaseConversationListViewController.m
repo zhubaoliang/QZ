@@ -11,7 +11,7 @@
  */
 
 #import "EaseConversationListViewController.h"
-
+#import "DetileView.h"
 #import "EaseEmotionEscape.h"
 #import "EaseConversationCell.h"
 #import "EaseConvertToCommonEmoticonsHelper.h"
@@ -43,6 +43,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.showRefreshHeader = true;
     // Do any additional setup after loading the view.
 }
 
@@ -62,6 +63,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+   
+    
+    
     return [self.dataArray count];
 }
 
@@ -69,8 +73,7 @@
 {
     NSString *CellIdentifier = [EaseConversationCell cellIdentifierWithModel:nil];
     EaseConversationCell *cell = (EaseConversationCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    // Configure the cell...
+        // Configure the cell...
     if (cell == nil) {
         cell = [[EaseConversationCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
@@ -93,6 +96,7 @@
     } else {
         cell.timeLabel.text = [self _latestMessageTimeForConversationModel:model];
     }
+    // 以下为人为修正非官方
     
     return cell;
 }
@@ -107,7 +111,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+    //非官方
+    if(indexPath.row > self.dataArray.count)
+    {
+        DetileView *Devc = [[DetileView alloc]init];
+        Devc.From = ((EaseConversationCell *)[self.tableView cellForRowAtIndexPath:indexPath]).detailLabel.text;
+        [self.navigationController pushViewController:Devc animated:YES];
+    }
+    else{
     if (_delegate && [_delegate respondsToSelector:@selector(conversationListViewController:didSelectConversationModel:)]) {
         EaseConversationModel *model = [self.dataArray objectAtIndex:indexPath.row];
         [_delegate conversationListViewController:self didSelectConversationModel:model];
@@ -116,6 +127,7 @@
         EaseMessageViewController *viewController = [[EaseMessageViewController alloc] initWithConversationChatter:model.conversation.conversationId conversationType:model.conversation.type];
         viewController.title = model.title;
         [self.navigationController pushViewController:viewController animated:YES];
+    }
     }
 }
 

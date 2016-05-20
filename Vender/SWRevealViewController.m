@@ -78,6 +78,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     if ( result != result ) return min2;  // nan
     if ( result < min2 ) return min2;
     if ( result > max2 ) return max2;
+   
     return result;
 }
 
@@ -96,6 +97,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
 
         [self addSubview:_frontView];
     }
+    
     return self;
 }
 
@@ -107,6 +109,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     frontViewLayer.shadowOpacity = _c.frontViewShadowOpacity;
     frontViewLayer.shadowOffset = _c.frontViewShadowOffset;
     frontViewLayer.shadowRadius = _c.frontViewShadowRadius;
+   
 }
 
 
@@ -120,6 +123,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
         frame.origin.y += offset;
         frame.size.height -= offset;
     }
+    
     return frame;
 }
 
@@ -136,6 +140,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     CGFloat xLocation = [self frontLocationForPosition:_c.frontViewPosition];
     [self _layoutRearViewsForLocation:xLocation];
     [self _prepareForNewPosition:newPosition];
+    
 }
 
 
@@ -151,6 +156,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     CGFloat xLocation = [self frontLocationForPosition:_c.frontViewPosition];
     [self _layoutRearViewsForLocation:xLocation];
     [self _prepareForNewPosition:newPosition];
+    
 }
 
 
@@ -158,6 +164,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
 {
     [_rearView removeFromSuperview];
     _rearView = nil;
+    
 }
 
 
@@ -165,6 +172,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
 {
     [_rightView removeFromSuperview];
     _rightView = nil;
+    
 }
 
 
@@ -186,6 +194,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
         location = revealWidth + revealOverdraw;
 
     return location*symetry;
+    
 }
 
 
@@ -198,6 +207,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     
     CGRect frame = CGRectMake(xLocation, 0.0f, bounds.size.width, bounds.size.height);
     _frontView.frame = [self hierarchycalFrameAdjustment:frame];
+    
 }
 
 
@@ -227,6 +237,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     
     UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:shadowBounds];
     _frontView.layer.shadowPath = shadowPath.CGPath;
+    
 }
 
 
@@ -253,6 +264,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
             isInside = [_rightView pointInside:pt withEvent:event];
         }
     }
+    
     return isInside;
 }
 
@@ -274,6 +286,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
             }
         }
     }
+   
     return isInside;
 }
 
@@ -300,6 +313,7 @@ static CGFloat scaledValue( CGFloat v1, CGFloat min2, CGFloat max2, CGFloat min1
     
     CGFloat rightWidth = rightRevealWidth + _c.rightViewRevealOverdraw;
     _rightView.frame = CGRectMake(bounds.size.width-rightWidth+rightXLocation, 0.0f, rightWidth, bounds.size.height);
+    
 }
 
 

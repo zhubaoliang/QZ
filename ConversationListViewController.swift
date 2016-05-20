@@ -8,26 +8,39 @@
 
 import UIKit
 
-class ConversationListViewController: EaseConversationListViewController,EaseConversationListViewControllerDelegate, EaseConversationListViewControllerDataSource{
+class ConversationListViewController: EaseConversationListViewController,EaseConversationListViewControllerDelegate, EaseConversationListViewControllerDataSource,EMContactManagerDelegate{
 
     let conversationsArray = NSMutableArray()
     let networkStateView = UIView()
-
+    @IBOutlet weak var friendsButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.navigationController?.navigationBar.barTintColor = UIColor.purpleColor()
         self.title = "消息"
-        self.showRefreshHeader = true
-        self.delegate = self
-        self.dataSource = self
-        
-        self.tableViewDidTriggerHeaderRefresh()
-        self.tableView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)
+//        self.showRefreshHeader = true
+//        self.delegate = self
+//        self.dataSource = self
+//        self.tableViewDidTriggerHeaderRefresh()
 //        网络出现故障时
         
         self.NetworkStateView()
+        
+    //添加加好友监听
+        
+        //EMClient.sharedClient().contactManager.addDelegate(self, delegateQueue: nil)
+        
 
     }
+    //加好友监听回调
+    func didReceiveFriendInvitationFromUsername(aUsername: String!, message aMessage: String!) {
+           
+    }
+    @IBAction func friendsBtuttonClicked(sender:AnyObject)
+    {
+        let friendListViewController = FriendsList.init()
+        self.navigationController?.pushViewController(friendListViewController, animated: true)
+    }
+    
     func NetworkStateView()->UIView{
         if self.networkStateView.isKindOfClass(NSNull) {
            self.networkStateView.frame = CGRectMake(0, 0, self.tableView.frame.size.width, 44)
@@ -61,6 +74,7 @@ class ConversationListViewController: EaseConversationListViewController,EaseCon
             self.hidesBottomBarWhenPushed = false
         }
     }
+    
 //    DataSource方法
     func conversationListViewController(conversationListViewController: EaseConversationListViewController!, modelForConversation conversation: EMConversation!) -> IConversationModel! {
         let model = EaseConversationModel(conversation: conversation)
@@ -70,6 +84,10 @@ class ConversationListViewController: EaseConversationListViewController,EaseCon
 //    最后一条的时间
     func conversationListViewController(conversationListViewController: EaseConversationListViewController!, latestMessageTimeForConversationModel conversationModel: IConversationModel!) -> String! {
         var latestMessageTime = ""
+        if(conversationModel.conversation.latestMessage == nil)
+        {
+            return ""
+        }
         let lastMessage:EMMessage = conversationModel.conversation.latestMessage
         if lastMessage != "" {
            latestMessageTime = NSDate.formattedTimeFromTimeInterval(lastMessage.timestamp)
@@ -89,17 +107,78 @@ class ConversationListViewController: EaseConversationListViewController,EaseCon
     }
     
     override func viewWillAppear(animated: Bool) {
+        
+        self.delegate = self
+        self.dataSource = self
         EMClient.sharedClient().chatManager.addDelegate(self, delegateQueue: nil)
+        self.showRefreshHeader = true
+        
+        self.tableViewDidTriggerHeaderRefresh()
         self.refreshDataSource()
+        
+        
 //        self.refreshAndSortView()
         self.tabBarController?.tabBar.hidden = false
 //        self.tableView.reloadData()
+        
     }
+    override func viewWillDisappear(animated: Bool) {
+        EMClient.sharedClient().chatManager.removeDelegate(self)
+        print("移除")
+    }
+    
+    
     //MARK: -当收到消息的时候会收到此回调
      override func didReceiveMessages(aMessages: [AnyObject]!) {
+        //刷新显示
         self.refreshDataSource()
+        //定义本地通知
+        var Message = aMessages as! [EMMessage]
+        var isAppActivity:Bool = UIApplication.sharedApplication().applicationState == UIApplicationState.Active
+        if(!isAppActivity)
+        {
+            print("非活动")
+            let options:EMPushOptions = EMClient.sharedClient().pushOptions
+            let notification = UILocalNotification.init()
+            notification.fireDate = NSDate()
+            //notification.alertBody =
+            if(options.displayStyle == EMPushDisplayStyleMessageSummary)
+            {
+                print("判断题")
+                let messageBody:EMMessageBody = aMessages[0].body
+                var messageStr = ""
+                switch messageBody.type {
+                case EMMessageBodyType.init(1):
+                    messageStr = (messageBody as! EMTextMessageBody).text
+                case EMMessageBodyType.init(2): messageStr = NSLocalizedString("message.image", comment: "Image")
+                case EMMessageBodyType.init(4): messageStr = NSLocalizedString("message.location", comment: "Location")
+                case EMMessageBodyType.init(5): messageStr = NSLocalizedString("message.voice", comment: "Voice")
+                case EMMessageBodyType.init(3): messageStr = NSLocalizedString("message.video", comment: "Video")
+                default:
+                    break
+                }
+                notification.alertBody = "dfdsafsdafdfsd"
+                notification.alertAction = NSLocalizedString("open", comment: "open")
+                notification.timeZone = NSTimeZone.defaultTimeZone()
+                notification.soundName = UILocalNotificationDefaultSoundName
+                notification.applicationIconBadgeNumber = 1
+                UIApplication.sharedApplication().presentLocalNotificationNow(notification)
+                
+            }
+    
+        
+            
+
+        
+        
+        
+        
+        }
         //self.tableView.reloadData()
+        
+        print(aMessages)
     }
+    
 
     
 }
