@@ -13,7 +13,8 @@
 #import <HyphenateFullSDK/EMSDKFull.h>
 #import "EaseUI.h"
 #import "Reachability.h"
-
+#import "UITableView+SDAutoTableViewCellHeight.h"
+#import "UIView+SDAutoLayout.h"
 
 #import <BaiduMapAPI_Base/BMKBaseComponent.h>//引入base相关所有的头文件
 
